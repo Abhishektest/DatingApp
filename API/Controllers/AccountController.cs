@@ -35,7 +35,7 @@ namespace API.Controllers
             {
                 UserName = resigterDto.userName,
                 PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(resigterDto.Password)),// We need to hash the code
-                PasswordSallt = hmac.Key //Initlaise a new instance of Hmacsh class with a random generated key. so we set it to password salt
+                PasswordSalt = hmac.Key //Initlaise a new instance of Hmacsh class with a random generated key. so we set it to password salt
             };
             _context.Users.Add(user); //We are not adding anything to db ,Just we are tracking the same in EF.
             await _context.SaveChangesAsync(); //Now here we save the user in DB.	
@@ -52,7 +52,7 @@ namespace API.Controllers
             var user = await _context.Users
                  .SingleOrDefaultAsync(x => x.UserName == loginDto.userName);
             if (user == null) return Unauthorized("Invalid username");
-            using var hmac = new HMACSHA512(user.PasswordSallt);
+            using var hmac = new HMACSHA512(user.PasswordSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
             for(int i =0; i<computedHash.Length;i++)
             {
